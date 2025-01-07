@@ -1,7 +1,8 @@
 pipeline {
     agent any
     environment {
-        VERSION = ''
+        IMAGE_NAME = "my-app"
+        IMAGE_TAG = "latest"
     }
     
    
@@ -17,8 +18,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("my-app:${env.VERSION}", ".")
-
+                    docker.image("${IMAGE_NAME}:${IMAGE_TAG}").pull()
                 }
             }
         }
@@ -26,17 +26,13 @@ pipeline {
   
         stage('Deploy Docker Container') {
            steps {
-            sh """
-            ssh user@remote-server '
-            docker pull my-app:${env.VERSION} &&
-            docker stop my-app || true &&
-            docker rm my-app || true &&
-            docker run -d --name my-app -p 5000:5000 my-app:${env.VERSION}
-            '
-            """
-        
-           }
+                script {
+                    docker.image("${IMAGE_NAME}:${IMAGE_TAG}").run("-d -p 8080:8080 --name my-container")
+                }
+            }
         }
+    }
+        
 
     post {
         always {
