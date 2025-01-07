@@ -12,7 +12,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t my-flask-app1 .'
+                sh 'docker build -t my-flask-app .'
             }
         }
 
