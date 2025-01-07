@@ -27,7 +27,7 @@ pipeline {
         stage('Deploy Docker Container') {
            steps {
                 script {
-                    docker.image("${IMAGE_NAME}:${IMAGE_TAG}").run("-d -p 8080:8080 --name my-container")
+                    docker.image("${IMAGE_NAME}:${IMAGE_TAG}").run("-d -p 5000:5000 --name my-container")
                 }
             }
         }
