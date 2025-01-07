@@ -12,7 +12,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t my-flask-app .'
+                script {
+                    docker.build("my-app:latest", ".")
+                }
             }
         }
 
@@ -27,7 +29,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                sh 'docker run -d -p 5000:5000 --name flask-app my-flask-app'
+                    sh """ '
+                    docker pull my-app:latest &&
+                    docker stop my-app || true &&
+                    docker rm my-app || true &&
+                    docker run -d --name my-app -p 8080:8080 my-app:latest '
+                    """
             }
         }
     }
