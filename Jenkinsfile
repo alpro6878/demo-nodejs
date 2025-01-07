@@ -1,5 +1,7 @@
 pipeline {
     agent any
+    
+   
 
     stages {
         stage('Checkout') {
@@ -11,7 +13,6 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
                 script {
                     docker.build("my-app:latest", ".")
                 }
@@ -26,18 +27,20 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Docker Container') {
             steps {
-                echo 'Deploying application...'
-                    sh """ '
+                 {
+                    sh """
+                    
                     docker pull my-app:latest &&
                     docker stop my-app || true &&
                     docker rm my-app || true &&
-                    docker run -d --name my-app -p 8080:8080 my-app:latest '
+                    docker run -d --name my-app -p 8080:8080 my-app:latest
+                    '
                     """
+                }
             }
         }
-    }
 
     post {
         always {
