@@ -1,5 +1,7 @@
 pipeline {
     agent any
+
+    env.VERSION = sh(returnStdout: true, script: "git describe --tags").trim()
     
    
 
@@ -8,38 +10,31 @@ pipeline {
             steps {
                 echo 'Checking out code...'
                 checkout scm
-            }
+            }    
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("my-app:latest", ".")
+                    docker.build("my-app:${env.VERSION}", ".")
+
                 }
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                echo 'Running tests...'
-                // Add test scripts or mock test commands
-                sh 'docker run --rm my-flask-app python -c "import app; print(app.home())"'
-            }
-        }
-
+  
         stage('Deploy Docker Container') {
-            steps {
-                 {
-                    sh """
-                    
-                    docker pull my-app:latest &&
-                    docker stop my-app || true &&
-                    docker rm my-app || true &&
-                    docker run -d --name my-app -p 8080:8080 my-app:latest
-                    '
-                    """
-                }
-            }
+           steps {
+            sh """
+            ssh user@remote-server '
+            docker pull my-app:${env.VERSION} &&
+            docker stop my-app || true &&
+            docker rm my-app || true &&
+            docker run -d --name my-app -p 5000:5000 my-app:${env.VERSION}
+            '
+            """
+        
+           }
         }
 
     post {
