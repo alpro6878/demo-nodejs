@@ -27,7 +27,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                sh 'docker run -d -p 5000:5000 --name flask-app my-flask-app1'
+                sh 'docker run -d -p 5000:5000 --name flask-app my-flask-app'
             }
         }
     }
