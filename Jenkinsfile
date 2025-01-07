@@ -1,7 +1,8 @@
 pipeline {
     agent any
-
+    script{
     env.VERSION = sh(returnStdout: true, script: "git describe --tags").trim()
+    }
     
    
 
